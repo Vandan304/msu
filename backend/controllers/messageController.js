@@ -2,8 +2,11 @@ import { SecretMessage } from "../models/message.js";
 import bcrypt from "bcryptjs";
 import redisClient from "../config/redis.js";
 import crypto from "crypto";
+import dotenv from "dotenv";
 
-// ✅ POST: Create a Secret Message & Store in Redis
+dotenv.config();
+
+// ✅ POST: Create a Secret Message & Generate a Shareable Link
 export const createSecretMessage = async (req, res) => {
   try {
     const { message, password } = req.body;
@@ -23,10 +26,12 @@ export const createSecretMessage = async (req, res) => {
     const messageData = { key, message, password: hashedPassword };
     await redisClient.setEx(newMessage._id.toString(), 86400, JSON.stringify(messageData));
 
+    // ✅ Generate Shareable Link
+    const sharableLink = `${process.env.FRONTEND_URL}/secret/${newMessage._id}`;
+
     res.status(201).json({
       message: "Secret message created successfully!",
-      id: newMessage._id,
-      key, // Send key for retrieval
+      sharableLink, // ✅ Send sharable link to user
     });
   } catch (error) {
     console.error("❌ Error creating message:", error.message);
@@ -41,7 +46,7 @@ export const getSecretMessage = async (req, res) => {
     const { key, password } = req.body;
 
     // Validate ID format
-    if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({ error: "Invalid message ID format" });
     }
 

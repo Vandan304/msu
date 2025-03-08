@@ -3,7 +3,7 @@ import { createSecretMessage, getSecretMessage } from "../controllers/messageCon
 
 const router = express.Router();
 
-router.post("/", createSecretMessage);
-router.post("/:id", getSecretMessage); // ✅ Changed from GET to POST (to send key/password)
+router.post("/", createSecretMessage); // ✅ Create message and return shareable link
+router.post("/:id", getSecretMessage); // ✅ Use POST to retrieve & delete message (one-time use)
 
 export default router;
