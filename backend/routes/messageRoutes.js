@@ -4,6 +4,6 @@ import { createSecretMessage, getSecretMessage } from "../controllers/messageCon
 const router = express.Router();
 
 router.post("/", createSecretMessage);
-router.get("/:id", getSecretMessage);
+router.post("/:id", getSecretMessage); // ✅ Changed from GET to POST (to send key/password)
 
 export default router;
